@@ -367,12 +367,9 @@ files:
     }
 
   learner_created: true
-- name: names.txt
-  visible: true
-  learner_created: true
 feedback_link: https://hyperskill.org/projects/66/stages/358/implement#comment
 status: Solved
 feedback:
   message: Congratulations!
   time: Thu, 27 Jan 2022 16:43:52 UTC
-record: -1
+record: 5

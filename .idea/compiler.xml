@@ -9,6 +9,9 @@
       <module name="Simple_Search_Engine.Simple_Search_Engine-task-build-test-results.main" target="11" />
       <module name="Simple_Search_Engine.Simple_Search_Engine-task-build-tmp.main" target="11" />
       <module name="Simple_Search_Engine.Simple_Search_Engine-task.main" target="11" />
+      <module name="Simple_Search_Engine.Topics-Template_method-Template_Method.main" target="11" />
+      <module name="Simple_Search_Engine.Topics-Template_method-Template_Method__1_.main" target="11" />
+      <module name="Simple_Search_Engine.Topics-Template_method-Theory.main" target="11" />
       <module name="Simple_Search_Engine.util.main" target="11" />
     </bytecodeTargetLevel>
   </component>

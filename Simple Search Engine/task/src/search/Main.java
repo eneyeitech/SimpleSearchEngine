@@ -1,5 +1,7 @@
 package search;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -7,25 +9,31 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        new UserInterface().start();
+        new UserInterface(args).start();
     }
 }
 
 class SearchEngine {
 
-    public Scanner scanner = new Scanner(System.in);
     public final String SEPARATOR = " ";
     private final Repository repository = new Repository();
 
-    public void initRepository() {
-        int number = Util.getNumberOfPeople();
-        System.out.println("Enter all people:");
+    public void initRepository(String[] source) {
+        String fileName = source[1];
         List<DataModel> storage = repository.getStorage();
-        for (int i = 0; i < number; i++) {
-            DataModel dataModel = new DataModel();
-            dataModel.setDataLine(scanner.nextLine());
-            storage.add(dataModel);
+
+        File file = new File(fileName);
+
+        try (Scanner fileScanner = new Scanner(file)) {
+            while (fileScanner.hasNext()) {
+                DataModel dataModel = new DataModel();
+                dataModel.setDataLine(fileScanner.nextLine());
+                storage.add(dataModel);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("No file found: " + fileName);
         }
+
         repository.setStorage(storage);
         System.out.println();
     }
@@ -132,10 +140,15 @@ class DataModel {
 class UserInterface {
 
     public Scanner scanner = new Scanner(System.in);
+    private final String[] source;
+
+    public UserInterface(String[] source) {
+        this.source = source;
+    }
 
     public void start() {
         SearchEngine searchEngine = new SearchEngine();
-        searchEngine.initRepository();
+        searchEngine.initRepository(source);
         int option;
         do {
             option = choiceMainMenu();

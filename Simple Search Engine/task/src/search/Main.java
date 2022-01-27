@@ -2,10 +2,7 @@ package search;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -21,6 +18,7 @@ class SearchEngine {
     public void initRepository(String[] source) {
         String fileName = source[1];
         List<DataModel> storage = repository.getStorage();
+        Map<String, List<Integer>> invertedIndex = repository.getInvertedIndex();
 
         File file = new File(fileName);
 
@@ -29,38 +27,42 @@ class SearchEngine {
                 DataModel dataModel = new DataModel();
                 dataModel.setDataLine(fileScanner.nextLine());
                 storage.add(dataModel);
+                String[] content = dataModel.getDataLine()
+                        .toLowerCase(Locale.ROOT)
+                        .split(SEPARATOR);
+                for (String eachContent : content) {
+                    List<Integer> indexes = new ArrayList<>();
+                    if (invertedIndex.containsKey(eachContent)) {
+                        indexes = invertedIndex.get(eachContent);
+                        indexes.add(storage.size() - 1);
+                    } else {
+                        indexes.add(storage.size() - 1);
+                        invertedIndex.put(eachContent, indexes);
+                    }
+                }
             }
         } catch (FileNotFoundException e) {
             System.out.println("No file found: " + fileName);
         }
 
         repository.setStorage(storage);
+        repository.setInvertedIndex(invertedIndex);
+
         System.out.println();
     }
 
     public void searchingData() {
 
         List<DataModel> storage = repository.getStorage();
+        Map<String, List<Integer>> invertedIndex = repository.getInvertedIndex();
 
-        String queryWord = Util.getQueryWord();
+        String queryWord = Util.getQueryWord().toLowerCase(Locale.ROOT);
         List<Integer> resultIndex = new ArrayList<>();
-        for (int i = 0; i < storage.size(); i++) {
-            DataModel dataModel = storage.get(i);
-            if (processSearching(dataModel, queryWord)) {
-                resultIndex.add(i);
-            }
+        if (invertedIndex.containsKey(queryWord)) {
+            resultIndex = invertedIndex.get(queryWord);
         }
-        Util.printResult(storage, resultIndex);
-    }
 
-    private boolean processSearching(DataModel dataModel, String queryWord) {
-        String[] content = dataModel.getDataLine().toLowerCase(Locale.ROOT).split(SEPARATOR);
-        for (String each : content) {
-            if (each.contains(queryWord.toLowerCase(Locale.ROOT))) {
-                return true;
-            }
-        }
-        return false;
+        Util.printResult(storage, resultIndex);
     }
 
     public void printAllData() {
@@ -108,6 +110,7 @@ class Util {
 class Repository {
 
     private List<DataModel> storage = new ArrayList<>();
+    private Map<String, List<Integer>> invertedIndex = new HashMap<>();
 
     public Repository() {
     }
@@ -118,6 +121,14 @@ class Repository {
 
     public void setStorage(List<DataModel> storage) {
         this.storage = storage;
+    }
+
+    public Map<String, List<Integer>> getInvertedIndex() {
+        return invertedIndex;
+    }
+
+    public void setInvertedIndex(Map<String, List<Integer>> invertedIndex) {
+        this.invertedIndex = invertedIndex;
     }
 }
 
